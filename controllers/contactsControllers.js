@@ -13,7 +13,7 @@ export const getAllContacts = async (req, res) => {
       status: "success",
       code: 200,
       data: {
-        contacts,
+        contacts: JSON.parse(contacts),
       },
     });
   } catch (err) {

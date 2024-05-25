@@ -1,7 +1,7 @@
 import path from "path";
 import { promises as fs } from "fs";
-import HttpError from "../helpers/HttpError";
-import { updateContactSchema } from "../schemas/contactsSchemas";
+import HttpError from "../helpers/HttpError.js";
+import { updateContactSchema } from "../schemas/contactsSchemas.js";
 
 export const contactsPath = path.resolve(".", "db", "contacts.json");
 
