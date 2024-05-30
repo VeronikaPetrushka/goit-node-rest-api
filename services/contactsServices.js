@@ -1,7 +1,10 @@
 import path from "path";
 import { promises as fs } from "fs";
 import HttpError from "../helpers/HttpError.js";
-import { updateContactSchema } from "../schemas/contactsSchemas.js";
+import {
+  createContactSchema,
+  updateContactSchema,
+} from "../schemas/contactsSchemas.js";
 
 export const contactsPath = path.resolve(".", "db", "contacts.json");
 
@@ -38,6 +41,7 @@ export async function removeContact(id) {
 
 export async function addContact(name, email, phone) {
   try {
+    createContactSchema.validate(data, { abortEarly: false });
     const data = JSON.parse(await fs.readFile(contactsPath));
     const newContact = { id: Date.now(), name, email, phone };
     data.push(newContact);

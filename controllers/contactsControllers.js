@@ -5,7 +5,10 @@ import {
   removeContact,
   updateContact as updateContactService,
 } from "../services/contactsServices.js";
-import { createContactSchema } from "../schemas/contactsSchemas.js";
+import {
+  updateContactSchema,
+  createContactSchema,
+} from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res) => {
   try {
