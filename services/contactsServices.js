@@ -52,13 +52,11 @@ export async function addContact(name, email, phone) {
   }
 }
 
-export async function updateContact(contactId, data) {
+export async function updateContact(id, data) {
   try {
     updateContactSchema.validate(data, { abortEarly: false });
     const contacts = JSON.parse(await fs.readFile(contactsPath));
-    const contactIndex = contacts.findIndex(
-      (contact) => contact.id === contactId
-    );
+    const contactIndex = contacts.findIndex((contact) => contact.id === id);
 
     if (contactIndex === -1) {
       throw new HttpError(404, "Contact not found");
