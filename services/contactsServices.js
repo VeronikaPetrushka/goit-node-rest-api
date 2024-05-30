@@ -14,22 +14,22 @@ export async function listContacts() {
   }
 }
 
-export async function getContactById(contactId) {
+export async function getContactById(id) {
   try {
     const data = JSON.parse(await fs.readFile(contactsPath));
-    const contact = data.find((c) => c.id === contactId);
+    const contact = data.find((c) => c.id === id);
     return contact ? contact : null;
   } catch (err) {
     throw new HttpError(500, "Internal Server Error");
   }
 }
 
-export async function removeContact(contactId) {
+export async function removeContact(id) {
   try {
     const data = JSON.parse(await fs.readFile(contactsPath));
-    const updatedContacts = data.filter((c) => c.id !== contactId);
+    const updatedContacts = data.filter((c) => c.id !== id);
     await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
-    const deletedContact = data.find((c) => c.id === contactId);
+    const deletedContact = data.find((c) => c.id === id);
     return deletedContact ? deletedContact : null;
   } catch (err) {
     throw new HttpError(500, "Internal Server Error");
