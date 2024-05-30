@@ -10,7 +10,7 @@ export async function listContacts() {
     const data = await fs.readFile(contactsPath);
     return data.toString();
   } catch (err) {
-    return err.message;
+    throw new HttpError(500, "Internal Server Error");
   }
 }
 
@@ -20,7 +20,7 @@ export async function getContactById(contactId) {
     const contact = data.find((c) => c.id === contactId);
     return contact ? contact : null;
   } catch (err) {
-    return null;
+    throw new HttpError(500, "Internal Server Error");
   }
 }
 
@@ -32,7 +32,7 @@ export async function removeContact(contactId) {
     const deletedContact = data.find((c) => c.id === contactId);
     return deletedContact ? deletedContact : null;
   } catch (err) {
-    return null;
+    throw new HttpError(500, "Internal Server Error");
   }
 }
 
@@ -44,7 +44,7 @@ export async function addContact(name, email, phone) {
     await fs.writeFile(contactsPath, JSON.stringify(data, null, 2));
     return newContact;
   } catch (err) {
-    return null;
+    throw new HttpError(500, "Internal Server Error");
   }
 }
 
@@ -57,7 +57,7 @@ export async function updateContact(contactId, data) {
     );
 
     if (contactIndex === -1) {
-      throw HttpError(404, "Contact not found");
+      throw new HttpError(404, "Contact not found");
     }
 
     contacts[contactIndex] = { ...contacts[contactIndex], ...data };
@@ -66,7 +66,10 @@ export async function updateContact(contactId, data) {
     return contacts[contactIndex];
   } catch (error) {
     if (error.isJoi) {
-      throw HttpError(400, error.details.map((err) => err.message).join(", "));
+      throw new HttpError(
+        400,
+        error.details.map((err) => err.message).join(", ")
+      );
     } else {
       throw error;
     }
