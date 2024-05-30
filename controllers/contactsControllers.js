@@ -25,53 +25,49 @@ export const getAllContacts = async (req, res) => {
   }
 };
 
-export const getOneContact = async (req, res) => {
-  const { contactId } = req.params;
+export async function getOneContact(req, res) {
+  const contactId = req.params.id;
   try {
     const contact = await getContactById(contactId);
-    if (contact) {
-      res.json({
-        status: "success",
-        code: 200,
-        data: { contact },
-      });
-    } else {
-      res.status(404).json({
+    if (!contact) {
+      return res.status(404).json({
         status: "error",
         code: 404,
-        message: "Not found",
+        message: "Contact not found",
       });
     }
-  } catch (err) {
-    res.status(500).json({
+    return res.status(200).json(contact);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       status: "error",
       code: 500,
       message: "Internal Server Error",
     });
   }
-};
+}
 
-export const deleteContact = async (req, res) => {
-  const { contactId } = req.params;
+export async function deleteContact(req, res) {
+  const contactId = req.params.id;
   try {
     const deletedContact = await removeContact(contactId);
-    if (deletedContact) {
-      res.status(204).json();
-    } else {
-      res.status(404).json({
+    if (!deletedContact) {
+      return res.status(404).json({
         status: "error",
         code: 404,
-        message: "Not found",
+        message: "Contact not found",
       });
     }
-  } catch (err) {
-    res.status(500).json({
+    return res.status(204).json(deletedContact);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       status: "error",
       code: 500,
       message: "Internal Server Error",
     });
   }
-};
+}
 
 export const createContact = async (req, res) => {
   const { name, email, phone } = req.body;
