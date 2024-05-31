@@ -40,16 +40,12 @@ export async function removeContact(id) {
 }
 
 export async function addContact(name, email, phone) {
-  try {
-    createContactSchema.validate(data, { abortEarly: false });
-    const data = JSON.parse(await fs.readFile(contactsPath));
-    const newContact = { id: Date.now(), name, email, phone };
-    data.push(newContact);
-    await fs.writeFile(contactsPath, JSON.stringify(data, null, 2));
-    return newContact;
-  } catch (err) {
-    throw new HttpError(500, "Internal Server Error");
-  }
+  const data = JSON.parse(await fs.readFile(contactsPath));
+  createContactSchema.validate(data, { abortEarly: false });
+  const newContact = { id: Date.now(), name, email, phone };
+  data.push(newContact);
+  await fs.writeFile(contactsPath, JSON.stringify(data, null, 2));
+  return newContact;
 }
 
 export async function updateContact(id, data) {
