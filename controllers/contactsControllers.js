@@ -62,9 +62,7 @@ export const createContact = async (req, res) => {
   try {
     createContactSchema.validate({ name, email, phone }, { abortEarly: false });
     const newContact = await addContact(name, email, phone);
-    res.status(201).json({
-      data: { newContact },
-    });
+    res.status(201).json(newContact);
   } catch (error) {
     if (error.isJoi) {
       return res.status(400).json({
@@ -100,7 +98,7 @@ export const updateContact = async (req, res) => {
       return res.status(404).json({ message: "Not found" });
     }
 
-    return res.status(200).json({ message: "Success", updatedContact });
+    return res.status(200).json(updatedContact);
   } catch (error) {
     if (error.isJoi) {
       return res.status(400).json({

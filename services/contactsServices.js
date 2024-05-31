@@ -9,34 +9,22 @@ import {
 export const contactsPath = path.resolve(".", "db", "contacts.json");
 
 export async function listContacts() {
-  try {
-    const data = await fs.readFile(contactsPath);
-    return data.toString();
-  } catch (err) {
-    throw new HttpError(500, "Internal Server Error");
-  }
+  const data = await fs.readFile(contactsPath);
+  return data.toString();
 }
 
 export async function getContactById(id) {
-  try {
-    const data = JSON.parse(await fs.readFile(contactsPath));
-    const contact = data.find((c) => c.id === id);
-    return contact ? contact : null;
-  } catch (err) {
-    throw new HttpError(500, "Internal Server Error");
-  }
+  const data = JSON.parse(await fs.readFile(contactsPath));
+  const contact = data.find((c) => c.id === id);
+  return contact ? contact : null;
 }
 
 export async function removeContact(id) {
-  try {
-    const data = JSON.parse(await fs.readFile(contactsPath));
-    const updatedContacts = data.filter((c) => c.id !== id);
-    await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
-    const deletedContact = data.find((c) => c.id === id);
-    return deletedContact ? deletedContact : null;
-  } catch (err) {
-    throw new HttpError(500, "Internal Server Error");
-  }
+  const data = JSON.parse(await fs.readFile(contactsPath));
+  const updatedContacts = data.filter((c) => c.id !== id);
+  await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
+  const deletedContact = data.find((c) => c.id === id);
+  return deletedContact ? deletedContact : null;
 }
 
 export async function addContact(name, email, phone) {
