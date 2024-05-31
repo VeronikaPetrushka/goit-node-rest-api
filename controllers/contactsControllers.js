@@ -48,7 +48,7 @@ export async function deleteContact(req, res) {
         message: "Contact not found",
       });
     }
-    return res.status(204).json(deletedContact);
+    return res.status(200).json(deletedContact);
   } catch (error) {
     console.error(error);
     return res.status(500).json({
