@@ -5,6 +5,10 @@ import {
   removeContact,
   updateContact as updateContactService,
 } from "../services/contactsServices.js";
+import {
+  createContactSchema,
+  updateContactSchema,
+} from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res) => {
   try {
@@ -75,6 +79,12 @@ export const deleteContact = async (req, res) => {
 
 export const createContact = async (req, res) => {
   const { name, email, phone } = req.body;
+  const { error } = createContactSchema.validate({ name, email, phone });
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
   const newContact = await addContact(name, email, phone);
   if (newContact) {
     res.status(201).json({
@@ -92,6 +102,11 @@ export const createContact = async (req, res) => {
 export const updateContact = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone } = req.body;
+  const { error } = updateContactSchema.validate({ name, email, phone });
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
 
   if (!name && !email && !phone) {
     return res

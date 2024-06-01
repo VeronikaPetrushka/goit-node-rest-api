@@ -60,7 +60,16 @@ export async function updateContact(contactId, data) {
       throw HttpError(404, "Contact not found");
     }
 
-    contacts[contactIndex] = { ...contacts[contactIndex], ...data };
+    const updatedData = { ...data };
+    const existingContact = contacts[contactIndex];
+
+    for (const key in updatedData) {
+      if (updatedData[key] === undefined) {
+        updatedData[key] = existingContact[key];
+      }
+    }
+
+    contacts[contactIndex] = { ...existingContact, ...updatedData };
     await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
 
     return contacts[contactIndex];
