@@ -13,69 +13,49 @@ import {
 export const getAllContacts = async (req, res) => {
   try {
     const contacts = await listContacts();
-    res.json({
-      status: "success",
-      code: 200,
-      data: {
-        contacts: JSON.parse(contacts),
-      },
-    });
+    res.json(JSON.parse(contacts));
   } catch (err) {
     res.status(500).json({
-      status: "error",
-      code: 500,
       message: "Internal Server Error",
     });
   }
 };
 
-export const getOneContact = async (req, res) => {
-  const { contactId } = req.params;
+export async function getOneContact(req, res) {
+  const id = req.params.id;
   try {
-    const contact = await getContactById(contactId);
-    if (contact) {
-      res.json({
-        status: "success",
-        code: 200,
-        data: { contact },
-      });
-    } else {
-      res.status(404).json({
-        status: "error",
-        code: 404,
-        message: "Not found",
+    const contact = await getContactById(id);
+    if (!contact) {
+      return res.status(404).json({
+        message: "Contact not found",
       });
     }
-  } catch (err) {
-    res.status(500).json({
-      status: "error",
-      code: 500,
+    return res.status(200).json(contact);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       message: "Internal Server Error",
     });
   }
-};
+}
 
-export const deleteContact = async (req, res) => {
-  const { contactId } = req.params;
+export async function deleteContact(req, res) {
+  const id = req.params.id;
   try {
-    const deletedContact = await removeContact(contactId);
-    if (deletedContact) {
-      res.status(204).json();
-    } else {
-      res.status(404).json({
-        status: "error",
-        code: 404,
-        message: "Not found",
+    const deletedContact = await removeContact(id);
+    if (!deletedContact) {
+      return res.status(404).json({
+        message: "Contact not found",
       });
     }
-  } catch (err) {
-    res.status(500).json({
-      status: "error",
-      code: 500,
+    return res.status(200).json(deletedContact);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       message: "Internal Server Error",
     });
   }
-};
+}
 
 export const createContact = async (req, res) => {
   const { name, email, phone } = req.body;
