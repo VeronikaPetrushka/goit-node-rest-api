@@ -87,11 +87,7 @@ export const createContact = async (req, res) => {
 
   const newContact = await addContact(name, email, phone);
   if (newContact) {
-    res.status(201).json({
-      status: "success",
-      code: 201,
-      data: { newContact },
-    });
+    res.status(200).json(newContact);
   } else {
     res
       .status(400)
