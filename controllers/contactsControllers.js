@@ -7,76 +7,56 @@ import {
   updateStatusContact,
 } from "../services/contactsServices2.js";
 import {
-  createContactSchema,
   updateContactSchema,
+  createContactSchema,
 } from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res) => {
   try {
     const contacts = await listContacts();
-    res.json({
-      status: "success",
-      code: 200,
-      data: {
-        contacts: JSON.parse(contacts),
-      },
-    });
+    res.json(JSON.parse(contacts));
   } catch (err) {
     res.status(500).json({
-      status: "error",
-      code: 500,
       message: "Internal Server Error",
     });
   }
 };
 
-export const getOneContact = async (req, res) => {
-  const { contactId } = req.params;
+export async function getOneContact(req, res) {
+  const id = req.params.id;
   try {
-    const contact = await getContactById(contactId);
-    if (contact) {
-      res.json({
-        status: "success",
-        code: 200,
-        data: { contact },
-      });
-    } else {
-      res.status(404).json({
-        status: "error",
-        code: 404,
-        message: "Not found",
+    const contact = await getContactById(id);
+    if (!contact) {
+      return res.status(404).json({
+        message: "Contact not found",
       });
     }
-  } catch (err) {
-    res.status(500).json({
-      status: "error",
-      code: 500,
+    return res.status(200).json(contact);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       message: "Internal Server Error",
     });
   }
-};
+}
 
-export const deleteContact = async (req, res) => {
-  const { contactId } = req.params;
+export async function deleteContact(req, res) {
+  const id = req.params.id;
   try {
-    const deletedContact = await removeContact(contactId);
-    if (deletedContact) {
-      res.status(204).json();
-    } else {
-      res.status(404).json({
-        status: "error",
-        code: 404,
-        message: "Not found",
+    const deletedContact = await removeContact(id);
+    if (!deletedContact) {
+      return res.status(404).json({
+        message: "Contact not found",
       });
     }
-  } catch (err) {
-    res.status(500).json({
-      status: "error",
-      code: 500,
+    return res.status(200).json(deletedContact);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       message: "Internal Server Error",
     });
   }
-};
+}
 
 export const createContact = async (req, res) => {
   const { name, email, phone } = req.body;
@@ -92,11 +72,20 @@ export const createContact = async (req, res) => {
       status: "success",
       code: 201,
       data: { newContact },
+  try {
+    createContactSchema.validate({ name, email, phone }, { abortEarly: false });
+    const newContact = await addContact(name, email, phone);
+    res.status(201).json(newContact);
+  } catch (error) {
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((err) => err.message).join(", "),
+      });
+    }
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
     });
-  } else {
-    res
-      .status(400)
-      .json({ message: "Invalid data provided. Please check your input." });
   }
 };
 
@@ -115,13 +104,30 @@ export const updateContact = async (req, res) => {
       .json({ message: "Body must have at least one field" });
   }
 
-  const updatedContact = await updateContactService(id, { name, email, phone });
+  try {
+    updateContactSchema.validate({ name, email, phone }, { abortEarly: false });
+    const updatedContact = await updateContactService(id, {
+      name,
+      email,
+      phone,
+    });
 
-  if (!updatedContact) {
-    return res.status(404).json({ message: "Not found" });
+    if (!updatedContact) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    return res.status(200).json(updatedContact);
+  } catch (error) {
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((err) => err.message).join(", "),
+      });
+    }
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
-
-  return res.status(200).json({ message: "Success", updatedContact });
 };
 
 export const updateStatus = async (req, res) => {
