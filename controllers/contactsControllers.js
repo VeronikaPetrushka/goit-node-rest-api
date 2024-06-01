@@ -116,5 +116,5 @@ export const updateContact = async (req, res) => {
     return res.status(404).json({ message: "Not found" });
   }
 
-  return res.status(200).json({ message: "Success", updatedContact });
+  return res.status(200).json(updatedContact);
 };
