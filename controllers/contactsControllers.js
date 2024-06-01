@@ -4,7 +4,16 @@ import {
   listContacts,
   removeContact,
   updateContact as updateContactService,
+<<<<<<< Updated upstream
 } from "../services/contactsServices.js";
+=======
+  updateStatusContact,
+} from "../services/contactsServices2.js";
+import {
+  updateContactSchema,
+  createContactSchema,
+} from "../schemas/contactsSchemas.js";
+>>>>>>> Stashed changes
 
 export const getAllContacts = async (req, res) => {
   try {
@@ -106,4 +115,29 @@ export const updateContact = async (req, res) => {
   }
 
   return res.status(200).json({ message: "Success", updatedContact });
+};
+
+export const updateStatus = async (req, res) => {
+  const { id } = req.params;
+  const { favorite } = req.body;
+
+  try {
+    const updatedStatus = await updateStatusContact(id, { favorite });
+
+    if (!updatedStatus) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    return res.status(200).json(updatedStatus);
+  } catch (error) {
+    if (error.isJoi) {
+      return res.status(400).json({
+        message: error.details.map((err) => err.message).join(", "),
+      });
+    }
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
 };
