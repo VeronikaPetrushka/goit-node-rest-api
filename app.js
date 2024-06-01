@@ -1,11 +1,9 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import mongoose from "mongoose";
 import contactsRouter from "./routes/contactsRouter.js";
-import dotenv from "dotenv";
-
-dotenv.config();
+import "dotenv/config";
+import "./db.js";
 
 const app = express();
 
@@ -27,22 +25,11 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-const uriDb = `mongodb://localhost/db-contacts.contacts.json`;
 
-mongoose
-  .connect(uriDb, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    // useCreateIndex: true,
-    // promiseLibrary: global.Promise,
-  })
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log(`Database connection successful`);
-    });
-  })
-  .catch((err) => {
-    console.error(`Server not running. Error message: ${err.message}`);
-    process.exit(1);
+try {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
   });
+} catch (err) {
+  console.error(`Server not running. Error message: ${err.message}`);
+}
