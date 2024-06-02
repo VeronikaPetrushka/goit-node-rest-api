@@ -14,7 +14,7 @@ import {
 export const getAllContacts = async (req, res) => {
   try {
     const contacts = await listContacts();
-    res.json(JSON.parse(contacts));
+    res.json(contacts);
   } catch (err) {
     res.status(500).json({
       message: "Internal Server Error",
