@@ -102,16 +102,17 @@ export const updateContact = async (req, res) => {
 
 export const updateStatus = async (req, res) => {
   const { id } = req.params;
-  const body = req.body;
+  const { favorite } = req.body;
 
-  if (body && typeof body.favorite === "boolean") {
-    const updatedContact = await updateStatusContact(id, body);
-    if (updatedContact) {
-      return res.status(200).json(updatedContact);
-    } else {
-      return res.status(404).json({ message: "Not found" });
-    }
-  } else {
+  if (typeof favorite !== "boolean") {
     return res.status(400).json({ message: "Invalid request body" });
+  }
+
+  const updatedContact = await updateStatusContact(id, { favorite });
+
+  if (updatedContact) {
+    return res.status(200).json(updatedContact);
+  } else {
+    return res.status(404).json({ message: "Not found" });
   }
 };
