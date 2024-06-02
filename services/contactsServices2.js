@@ -27,11 +27,9 @@ export const removeContact = async (id) => {
   return deletedContact;
 };
 
-export const updateStatusContact = async (id, favorite) => {
-  const updatedStatus = await Contact.findByIdAndUpdate(
-    id,
-    { favorite },
-    { new: true }
-  );
-  return updatedStatus;
+export const updateStatusContact = async (id, body) => {
+  const updatedContact = await Contact.findByIdAndUpdate(id, body, {
+    new: true,
+  });
+  return updatedContact;
 };

@@ -102,25 +102,16 @@ export const updateContact = async (req, res) => {
 
 export const updateStatus = async (req, res) => {
   const { id } = req.params;
-  const { favorite } = req.body;
+  const body = req.body;
 
-  try {
-    const updatedStatus = await updateStatusContact(id, { favorite });
-
-    if (!updatedStatus) {
+  if (body && typeof body.favorite === "boolean") {
+    const updatedContact = await updateStatusContact(id, body);
+    if (updatedContact) {
+      return res.status(200).json(updatedContact);
+    } else {
       return res.status(404).json({ message: "Not found" });
     }
-
-    return res.status(200).json(updatedStatus);
-  } catch (error) {
-    if (error.isJoi) {
-      return res.status(400).json({
-        message: error.details.map((err) => err.message).join(", "),
-      });
-    }
-    console.error(error);
-    return res.status(500).json({
-      message: "Internal Server Error",
-    });
+  } else {
+    return res.status(400).json({ message: "Invalid request body" });
   }
 };
