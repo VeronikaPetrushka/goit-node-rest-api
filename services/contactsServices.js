@@ -41,6 +41,10 @@ export async function updateContact(id, data) {
   const contacts = JSON.parse(await fs.readFile(contactsPath));
   const contactIndex = contacts.findIndex((contact) => contact.id === id);
 
+  if (contactIndex === -1) {
+    throw HttpError(404, "Contact not found");
+  }
+
   const updatedData = { ...data };
   const existingContact = contacts[contactIndex];
 
