@@ -44,11 +44,11 @@ export async function updateContact(id, data) {
   const updatedData = { ...data };
   const existingContact = contacts[contactIndex];
 
-  // for (const key in updatedData) {
-  //   if (updatedData[key] === undefined) {
-  //     updatedData[key] = existingContact[key];
-  //   }
-  // }
+  for (const key in updatedData) {
+    if (updatedData[key] === undefined) {
+      updatedData[key] = existingContact[key];
+    }
+  }
 
   contacts[contactIndex] = { ...existingContact, ...updatedData };
   await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
