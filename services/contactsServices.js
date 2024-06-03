@@ -37,36 +37,21 @@ export async function addContact(name, email, phone) {
 }
 
 export async function updateContact(id, data) {
-  // try {
   updateContactSchema.validate(data, { abortEarly: false });
   const contacts = JSON.parse(await fs.readFile(contactsPath));
   const contactIndex = contacts.findIndex((contact) => contact.id === id);
 
-  // if (contactIndex === -1) {
-  //   throw new HttpError(404, "Contact not found");
-  // }
-
   const updatedData = { ...data };
   const existingContact = contacts[contactIndex];
 
-  for (const key in updatedData) {
-    if (updatedData[key] === undefined) {
-      updatedData[key] = existingContact[key];
-    }
-  }
+  // for (const key in updatedData) {
+  //   if (updatedData[key] === undefined) {
+  //     updatedData[key] = existingContact[key];
+  //   }
+  // }
 
   contacts[contactIndex] = { ...existingContact, ...updatedData };
   await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
 
   return contacts[contactIndex];
-  // } catch (error) {
-  //   if (error.isJoi) {
-  //     throw new HttpError(
-  //       400,
-  //       error.details.map((err) => err.message).join(", ")
-  //     );
-  //   } else {
-  //     throw error;
-  //   }
-  // }
 }
