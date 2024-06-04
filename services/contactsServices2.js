@@ -28,12 +28,8 @@ export const removeContact = async (id) => {
 };
 
 export const updateStatusContact = async (id, favorite) => {
-  const updatedContact = await Contact.findByIdAndUpdate(
-    id,
-    { favorite },
-    {
-      new: true,
-    }
-  );
+  const updatedContact = await Contact.findByIdAndUpdate(id, favorite, {
+    new: true,
+  });
   return updatedContact ? updateContact : null;
 };

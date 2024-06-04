@@ -119,10 +119,6 @@ export const updateStatus = async (req, res) => {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  if (typeof favorite !== "boolean") {
-    return res.status(400).json({ message: "Invalid request body" });
-  }
-
   try {
     const updatedContact = await updateStatusContact(id, { favorite });
 
