@@ -19,6 +19,9 @@ export const updateContact = async (id, fields) => {
   const updatedContact = await Contact.findByIdAndUpdate(id, fields, {
     new: true,
   });
+  if (!updateContact) {
+    return null;
+  }
   return updatedContact;
 };
 
