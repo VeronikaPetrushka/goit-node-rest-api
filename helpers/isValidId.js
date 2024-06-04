@@ -1,10 +1,10 @@
-import isValidObjectId from "mongoose";
+import mongoose from "mongoose";
 
 const isValidId = (req, res, next) => {
   const { id } = req.params;
-  if (!isValidObjectId(id)) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     res.status(400).json({
-      message: `${id} is not valid id`,
+      message: `${id} is not a valid id`,
     });
   }
   next();
