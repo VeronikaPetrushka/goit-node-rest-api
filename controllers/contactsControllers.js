@@ -6,8 +6,8 @@ import {
   updateContact as updateContactService,
 } from "../services/contactsServices.js";
 import {
-  updateContactSchema,
   createContactSchema,
+  updateContactSchema,
 } from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res) => {
@@ -59,26 +59,30 @@ export async function deleteContact(req, res) {
 
 export const createContact = async (req, res) => {
   const { name, email, phone } = req.body;
-  try {
-    createContactSchema.validate({ name, email, phone }, { abortEarly: false });
-    const newContact = await addContact(name, email, phone);
-    res.status(201).json(newContact);
-  } catch (error) {
-    if (error.isJoi) {
-      return res.status(400).json({
-        message: error.details.map((err) => err.message).join(", "),
-      });
-    }
-    console.error(error);
-    return res.status(500).json({
-      message: "Internal Server Error",
-    });
+  const { error } = createContactSchema.validate({ name, email, phone });
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
+  const newContact = await addContact(name, email, phone);
+  if (newContact) {
+    res.status(200).json(newContact);
+  } else {
+    res
+      .status(400)
+      .json({ message: "Invalid data provided. Please check your input." });
   }
 };
 
 export const updateContact = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone } = req.body;
+  const { error } = updateContactSchema.validate({ name, email, phone });
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
 
   if (!name && !email && !phone) {
     return res
@@ -86,28 +90,11 @@ export const updateContact = async (req, res) => {
       .json({ message: "Body must have at least one field" });
   }
 
-  try {
-    updateContactSchema.validate({ name, email, phone }, { abortEarly: false });
-    const updatedContact = await updateContactService(id, {
-      name,
-      email,
-      phone,
-    });
+  const updatedContact = await updateContactService(id, { name, email, phone });
 
-    if (!updatedContact) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
-    return res.status(200).json(updatedContact);
-  } catch (error) {
-    if (error.isJoi) {
-      return res.status(400).json({
-        message: error.details.map((err) => err.message).join(", "),
-      });
-    }
-    console.error(error);
-    return res.status(500).json({
-      message: "Internal Server Error",
-    });
+  if (!updatedContact) {
+    return res.status(404).json({ message: "Not found" });
   }
+
+  return res.status(200).json(updatedContact);
 };
