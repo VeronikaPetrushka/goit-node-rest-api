@@ -42,7 +42,7 @@ export async function updateContact(id, data) {
   const contactIndex = contacts.findIndex((contact) => contact.id === id);
 
   if (contactIndex === -1) {
-    throw HttpError(404, "Contact not found");
+    return null;
   }
 
   const updatedData = { ...data };
