@@ -7,6 +7,9 @@ export const listContacts = async () => {
 
 export const getContactById = async (id) => {
   const contact = await Contact.findById(id);
+  if (!contact) {
+    return null;
+  }
   return contact;
 };
 
@@ -19,7 +22,7 @@ export const updateContact = async (id, fields) => {
   const updatedContact = await Contact.findByIdAndUpdate(id, fields, {
     new: true,
   });
-  if (!updateContact) {
+  if (!updatedContact) {
     return null;
   }
   return updatedContact;
@@ -27,12 +30,22 @@ export const updateContact = async (id, fields) => {
 
 export const removeContact = async (id) => {
   const deletedContact = await Contact.findByIdAndDelete(id);
+  if (!deletedContact) {
+    return null;
+  }
   return deletedContact;
 };
 
 export const updateStatusContact = async (id, favorite) => {
-  const updatedContact = await Contact.findByIdAndUpdate(id, favorite, {
-    new: true,
-  });
+  const updatedContact = await Contact.findByIdAndUpdate(
+    id,
+    { favorite },
+    {
+      new: true,
+    }
+  );
+  if (!updatedContact) {
+    return null;
+  }
   return updatedContact;
 };

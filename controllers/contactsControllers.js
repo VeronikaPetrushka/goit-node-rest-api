@@ -91,13 +91,22 @@ export const updateContact = async (req, res) => {
       .json({ message: "Body must have at least one field" });
   }
 
-  const updatedContact = await updateContactService(id, { name, email, phone });
+  try {
+    const updatedContact = await updateContactService(id, {
+      name,
+      email,
+      phone,
+    });
 
-  if (!updatedContact) {
-    return res.status(404).json({ message: "Not found" });
+    if (!updatedContact) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    return res.status(200).json(updatedContact);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-
-  return res.status(200).json(updatedContact);
 };
 
 export const updateStatus = async (req, res) => {
@@ -108,11 +117,16 @@ export const updateStatus = async (req, res) => {
     return res.status(400).json({ message: "Invalid request body" });
   }
 
-  const updatedContact = await updateStatusContact(id, { favorite });
+  try {
+    const updatedContact = await updateStatusContact(id, { favorite });
 
-  if (updatedContact) {
-    return res.status(200).json(updatedContact);
-  } else {
-    return res.status(404).json({ message: "Not found" });
+    if (updatedContact) {
+      return res.status(200).json(updatedContact);
+    } else {
+      return res.status(404).json({ message: "Not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
