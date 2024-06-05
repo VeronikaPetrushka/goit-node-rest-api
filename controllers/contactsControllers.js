@@ -113,7 +113,7 @@ export const updateContact = async (req, res) => {
 export const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { favorite } = req.body;
-  const { error } = updateStatusSchema.validate(favorite);
+  const { error } = updateStatusSchema.validate(req.body);
 
   if (error) {
     return res.status(400).json({ message: error.details[0].message });

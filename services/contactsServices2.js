@@ -31,5 +31,5 @@ export const updateStatusContact = async (id, favorite) => {
   const updatedContact = await Contact.findByIdAndUpdate(id, favorite, {
     new: true,
   });
-  return updatedContact ? updateContact : null;
+  return updatedContact ? updatedContact : null;
 };
