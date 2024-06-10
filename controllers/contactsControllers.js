@@ -67,11 +67,11 @@ export const createContact = async (req, res) => {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  const newContact = await addContact(name, email, phone);
-  if (newContact) {
-    res.status(200).json(newContact);
-  } else {
-    res
+  try {
+    const newContact = await addContact({ name, email, phone });
+    return res.status(200).json(newContact);
+  } catch (err) {
+    return res
       .status(400)
       .json({ message: "Invalid data provided. Please check your input." });
   }
