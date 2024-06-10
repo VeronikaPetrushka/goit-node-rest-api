@@ -1,19 +1,21 @@
 import {
+  listContacts,
   addContact,
   getContactById,
-  listContacts,
   removeContact,
   updateContact as updateContactService,
-} from "../services/contactsServices.js";
+  updateStatusContact,
+} from "../services/contactsServices2.js";
 import {
-  updateContactSchema,
   createContactSchema,
+  updateContactSchema,
+  updateStatusSchema,
 } from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res) => {
   try {
     const contacts = await listContacts();
-    res.json(JSON.parse(contacts));
+    res.json(contacts);
   } catch (err) {
     res.status(500).json({
       message: "Internal Server Error",
@@ -59,26 +61,30 @@ export async function deleteContact(req, res) {
 
 export const createContact = async (req, res) => {
   const { name, email, phone } = req.body;
+  const { error } = createContactSchema.validate({ name, email, phone });
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
   try {
-    createContactSchema.validate({ name, email, phone }, { abortEarly: false });
-    const newContact = await addContact(name, email, phone);
-    res.status(201).json(newContact);
-  } catch (error) {
-    if (error.isJoi) {
-      return res.status(400).json({
-        message: error.details.map((err) => err.message).join(", "),
-      });
-    }
-    console.error(error);
-    return res.status(500).json({
-      message: "Internal Server Error",
-    });
+    const newContact = await addContact({ name, email, phone });
+    return res.status(200).json(newContact);
+  } catch (err) {
+    return res
+      .status(400)
+      .json({ message: "Invalid data provided. Please check your input." });
   }
 };
 
 export const updateContact = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone } = req.body;
+  const { error } = updateContactSchema.validate({ name, email, phone });
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
 
   if (!name && !email && !phone) {
     return res
@@ -87,7 +93,6 @@ export const updateContact = async (req, res) => {
   }
 
   try {
-    updateContactSchema.validate({ name, email, phone }, { abortEarly: false });
     const updatedContact = await updateContactService(id, {
       name,
       email,
@@ -100,14 +105,30 @@ export const updateContact = async (req, res) => {
 
     return res.status(200).json(updatedContact);
   } catch (error) {
-    if (error.isJoi) {
-      return res.status(400).json({
-        message: error.details.map((err) => err.message).join(", "),
-      });
-    }
     console.error(error);
-    return res.status(500).json({
-      message: "Internal Server Error",
-    });
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const updateStatus = async (req, res) => {
+  const { id } = req.params;
+  const { favorite } = req.body;
+  const { error } = updateStatusSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
+  try {
+    const updatedContact = await updateStatusContact(id, { favorite });
+
+    if (updatedContact) {
+      return res.status(200).json(updatedContact);
+    } else {
+      return res.status(404).json({ message: "Not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
