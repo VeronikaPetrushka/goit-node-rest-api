@@ -1,9 +1,9 @@
 import express from "express";
-import { authShemas, registerSchema } from "../schemas/validation.js";
+import { registerValid, loginValid } from "../helpers/isValidUser.js";
 import { register, login } from "../controllers/auth.js";
 
 const authRouter = express.Router();
 
-authRouter.post("/register", registerSchema, register);
+authRouter.post("/register", registerValid, register);
 
 export default authRouter;

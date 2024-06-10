@@ -69,9 +69,9 @@ export const createContact = async (req, res) => {
 
   const newContact = await addContact(name, email, phone);
   if (newContact) {
-    res.status(200).json(newContact);
+    return res.status(200).json(newContact);
   } else {
-    res
+    return res
       .status(400)
       .json({ message: "Invalid data provided. Please check your input." });
   }
