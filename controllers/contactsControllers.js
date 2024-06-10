@@ -10,7 +10,7 @@ import {
   createContactSchema,
   updateContactSchema,
   updateStatusSchema,
-} from "../schemas/contactsSchemas.js";
+} from "../schemas/validationSchemas.js";
 
 export const getAllContacts = async (req, res) => {
   try {
