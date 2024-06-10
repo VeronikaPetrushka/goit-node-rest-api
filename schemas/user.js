@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import handleMongooseError from "../helpers/isValidUser";
+import handleMongooseError from "../helpers/isValidUser.js";
 
 const Schema = mongoose.Schema;
 
-const emailRegexp = /^[a-zA-Z0–9._-]+@[a-zA-Z0–9.-]+\.[a-zA-Z]{2,4}$/;
+export const emailRegexp = /^[a-zA-Z0–9._-]+@[a-zA-Z0–9.-]+\.[a-zA-Z]{2,4}$/;
 
 const user = new Schema({
   name: {

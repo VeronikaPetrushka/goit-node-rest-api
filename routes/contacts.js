@@ -6,7 +6,7 @@ import {
   createContact,
   updateContact,
   updateStatus,
-} from "../controllers/contactsControllers.js";
+} from "../controllers/contacts.js";
 import isValidId from "../helpers/isValidId.js";
 
 const contactsRouter = express.Router();

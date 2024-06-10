@@ -5,12 +5,12 @@ import {
   removeContact,
   updateContact as updateContactService,
   updateStatusContact,
-} from "../services/contactsServices2.js";
+} from "../services/contacts.js";
 import {
   createContactSchema,
   updateContactSchema,
   updateStatusSchema,
-} from "../schemas/validationSchemas.js";
+} from "../schemas/validation.js";
 
 export const getAllContacts = async (req, res) => {
   try {

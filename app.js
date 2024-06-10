@@ -1,8 +1,8 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import contactsRouter from "./routes/contactsRouter.js";
-import authRouter from "./routes/authRouter.js";
+import contactsRouter from "./routes/contacts.js";
+import authRouter from "./routes/auth.js";
 import handleMongooseError from "./helpers/isValidUser.js";
 import "dotenv/config";
 import "./db.js";
