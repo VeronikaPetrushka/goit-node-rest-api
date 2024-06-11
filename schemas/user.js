@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import handleMongooseError from "../helpers/mongooseErr.js";
+import handleMongooseError from "../middlewares/mongooseErr.js";
 
 const Schema = mongoose.Schema;
 
@@ -33,6 +33,7 @@ const user = new Schema({
   owner: {
     type: Schema.Types.ObjectId,
     ref: "user",
+    // required: true,
   },
 });
 

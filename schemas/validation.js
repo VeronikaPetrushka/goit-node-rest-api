@@ -32,3 +32,7 @@ export const authShemas = {
   registerSchema,
   loginSchema,
 };
+
+export const updateUserSubscriptionSchema = Joi.object({
+  subscription: Joi.string().valid("starter", "pro", "business").required(),
+});

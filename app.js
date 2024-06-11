@@ -5,7 +5,7 @@ import contactsRouter from "./routes/contacts.js";
 import authRouter from "./routes/auth.js";
 import "dotenv/config";
 import "./db.js";
-import handleMongooseError from "./helpers/mongooseErr.js";
+import handleMongooseError from "./middlewares/mongooseErr.js";
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/auth", authRouter);
+app.use("/api/users", authRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((_, res) => {
