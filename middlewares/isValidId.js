@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const isValidId = (req, res, next) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(400).json({
+    return res.status(400).json({
       message: `${id} is not a valid id`,
     });
   }

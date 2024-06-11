@@ -5,16 +5,26 @@ import {
   removeContact,
   updateContact as updateContactService,
   updateStatusContact,
-} from "../services/contactsServices2.js";
+} from "../services/contacts.js";
 import {
   createContactSchema,
   updateContactSchema,
   updateStatusSchema,
-} from "../schemas/contactsSchemas.js";
+} from "../schemas/validation.js";
 
 export const getAllContacts = async (req, res) => {
   try {
-    const contacts = await listContacts();
+    const { _id: owner } = req.user;
+    const { page = 1, limit = 10, favorite } = req.query;
+    const skip = (page - 1) * limit;
+
+    const criteria = { owner };
+    if (favorite !== undefined) {
+      criteria.favorite = favorite === "true";
+    }
+
+    const contacts = await listContacts(criteria, { skip, limit });
+
     res.json(contacts);
   } catch (err) {
     res.status(500).json({
@@ -61,17 +71,18 @@ export async function deleteContact(req, res) {
 
 export const createContact = async (req, res) => {
   const { name, email, phone } = req.body;
-  const { error } = createContactSchema.validate({ name, email, phone });
+  const { error } = createContactSchema.validate({ ...req.body });
+  const { _id: owner } = req.user;
 
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  const newContact = await addContact(name, email, phone);
-  if (newContact) {
-    res.status(200).json(newContact);
-  } else {
-    res
+  try {
+    const newContact = await addContact({ name, email, phone, owner });
+    return res.status(200).json(newContact);
+  } catch (err) {
+    return res
       .status(400)
       .json({ message: "Invalid data provided. Please check your input." });
   }
@@ -80,7 +91,7 @@ export const createContact = async (req, res) => {
 export const updateContact = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone } = req.body;
-  const { error } = updateContactSchema.validate({ name, email, phone });
+  const { error } = updateContactSchema.validate({ ...req.body });
 
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
@@ -93,10 +104,8 @@ export const updateContact = async (req, res) => {
   }
 
   try {
-    const updatedContact = await updateContactService(id, {
-      name,
-      email,
-      phone,
+    const updatedContact = await updateContactService(id, ...req.body, {
+      new: true,
     });
 
     if (!updatedContact) {
