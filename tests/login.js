@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import HttpError from "../helpers/HttpError.js";
 
-jest.mock("../models/User");
+jest.mock("../schemas/user.js");
 jest.mock("bcrypt");
 jest.mock("jsonwebtoken");
 
