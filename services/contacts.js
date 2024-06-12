@@ -1,7 +1,7 @@
-import Contact from "./schemas/schemas.js";
+import Contact from "../schemas/contact.js";
 
-export const listContacts = async () => {
-  const contacts = await Contact.find();
+export const listContacts = async (criteria, { skip, limit }) => {
+  const contacts = await Contact.find(criteria).skip(skip).limit(limit);
   return contacts;
 };
 
@@ -10,8 +10,8 @@ export const getContactById = async (id) => {
   return contact ? contact : null;
 };
 
-export const addContact = async ({ name, email, phone }) => {
-  const newContact = await Contact.create({ name, email, phone });
+export const addContact = async ({ name, email, phone, owner }) => {
+  const newContact = await Contact.create({ name, email, phone, owner });
   return newContact;
 };
 
