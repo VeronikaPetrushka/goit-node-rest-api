@@ -3,7 +3,6 @@ import HttpError from "../middlewares/HttpError.js";
 import bcrypt from "bcrypt";
 import { JWT_EXPIRATION, JWT_SECRET } from "../jwt.js";
 import jwt from "jsonwebtoken";
-import { updateUserSubscriptionSchema } from "../schemas/validation.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -90,35 +89,4 @@ export const logout = async (req, res) => {
   await User.findByIdAndUpdate(_id, { token: "" });
 
   res.status(204).end();
-};
-
-export const updateUserSubscription = async (req, res, next) => {
-  const { _id, email } = req.user;
-  const { subscription } = req.body;
-
-  const { error } = updateUserSubscriptionSchema.validate(req.body);
-  if (error) {
-    return next(HttpError(400, error.details[0].message));
-  }
-
-  try {
-    const user = await User.findById(_id);
-    if (!user) {
-      return next(HttpError(404, "User not found"));
-    }
-
-    user.subscription = subscription;
-
-    await user.save();
-
-    res.status(200).json({
-      message: "User subscription updated successfully",
-      user: {
-        email,
-        subscription,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
 };
