@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan("tiny"));
 
-app.use("/avatars", express.static(path.resolve("tmp")));
+app.use(express.static("public"));
 
 app.use("/api/users", authRouter);
 app.use("/api/users", userRouter);
