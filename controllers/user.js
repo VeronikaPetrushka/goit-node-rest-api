@@ -38,7 +38,8 @@ export const updateUserSubscription = async (req, res, next) => {
 export const updateUserAvatar = async (req, res, next) => {
   try {
     const { _id } = req.user;
-    const { path: tempPath, filename } = req.file;
+    const tempPath = req.file.path;
+    const filename = req.file.filename;
     const avatarDir = path.resolve("public", "avatars");
     const newPath = path.join(avatarDir, filename);
 
@@ -47,7 +48,7 @@ export const updateUserAvatar = async (req, res, next) => {
     const image = await Jimp.read(tempPath);
     await image.resize(250, 250).writeAsync(newPath);
 
-    await fs.unlink(tempPath);
+    await fs.rename(tempPath, newPath);
 
     const avatarURL = `/avatars/${filename}`;
 
