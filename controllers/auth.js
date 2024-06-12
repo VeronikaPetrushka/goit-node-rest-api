@@ -7,7 +7,7 @@ import { updateUserSubscriptionSchema } from "../schemas/validation.js";
 
 export const register = async (req, res, next) => {
   try {
-    const { email, password, owner } = req.body;
+    const { email, password } = req.body;
     const user = await User.findOne({ email });
 
     if (user) {
@@ -78,10 +78,8 @@ export const login = async (req, res, next) => {
 export const getCurrent = async (req, res) => {
   const { email, subscription } = req.user;
   res.status(200).json({
-    user: {
-      email,
-      subscription,
-    },
+    email,
+    subscription,
   });
 };
 
