@@ -6,6 +6,9 @@
     "dev": "nodemon ./app.js",
     "test": "jest"
   },
+  "jest": {
+    "testMatch": ["**/?(*.)+(spec|test).[tj]s?(x)"]
+  },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",

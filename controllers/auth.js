@@ -3,6 +3,7 @@ import HttpError from "../middlewares/HttpError.js";
 import bcrypt from "bcrypt";
 import { JWT_EXPIRATION, JWT_SECRET } from "../jwt.js";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
 
 export const register = async (req, res, next) => {
   try {
