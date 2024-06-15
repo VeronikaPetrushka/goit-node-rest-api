@@ -3,11 +3,11 @@ import HttpError from "../middlewares/HttpError.js";
 import bcrypt from "bcrypt";
 import { JWT_EXPIRATION, JWT_SECRET } from "../jwt.js";
 import jwt from "jsonwebtoken";
-import { updateUserSubscriptionSchema } from "../schemas/validation.js";
+import gravatar from "gravatar";
 
 export const register = async (req, res, next) => {
   try {
-    const { email, password, owner } = req.body;
+    const { email, password } = req.body;
     const user = await User.findOne({ email });
 
     if (user) {
@@ -15,10 +15,12 @@ export const register = async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const avatarURL = gravatar.url(email, { s: "250", d: "identicon" }, true);
 
     const newUser = await User.create({
       ...req.body,
       password: hashedPassword,
+      avatarURL,
     });
 
     if (newUser) {
@@ -78,10 +80,8 @@ export const login = async (req, res, next) => {
 export const getCurrent = async (req, res) => {
   const { email, subscription } = req.user;
   res.status(200).json({
-    user: {
-      email,
-      subscription,
-    },
+    email,
+    subscription,
   });
 };
 
@@ -90,35 +90,4 @@ export const logout = async (req, res) => {
   await User.findByIdAndUpdate(_id, { token: "" });
 
   res.status(204).end();
-};
-
-export const updateUserSubscription = async (req, res, next) => {
-  const { _id, email } = req.user;
-  const { subscription } = req.body;
-
-  const { error } = updateUserSubscriptionSchema.validate(req.body);
-  if (error) {
-    return next(HttpError(400, error.details[0].message));
-  }
-
-  try {
-    const user = await User.findById(_id);
-    if (!user) {
-      return next(HttpError(404, "User not found"));
-    }
-
-    user.subscription = subscription;
-
-    await user.save();
-
-    res.status(200).json({
-      message: "User subscription updated successfully",
-      user: {
-        email,
-        subscription,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
 };
