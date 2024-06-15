@@ -7,7 +7,9 @@
     "test": "jest"
   },
   "jest": {
-    "testMatch": ["**/?(*.)+(spec|test).[tj]s?(x)"]
+    "testMatch": [
+      "**/?(*.)+(spec|test).[tj]s?(x)"
+    ]
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -25,7 +27,8 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "path": "^0.12.7",
-    "promises": "^0.2.5"
+    "promises": "^0.2.5",
+    "supertest": "^7.0.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",

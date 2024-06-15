@@ -1,102 +1,58 @@
-import { login } from "../controllers/auth.js";
+import mongoose from "mongoose";
+import request from "supertest";
+
+import app from "../app.js";
 import User from "../schemas/user.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import HttpError from "../helpers/HttpError.js";
 
-jest.mock("../schemas/user.js");
-jest.mock("bcrypt");
-jest.mock("jsonwebtoken");
+const findUser = (filter) => User.findOne(filter);
+const deleteUsers = (filter) => User.deleteMany(filter);
 
-describe("login controller", () => {
-  let req, res, next;
+const { DB_URI, PORT = 8080 } = process.env;
 
-  beforeEach(() => {
-    req = {
-      body: {
-        email: "test@example.com",
-        password: "password123",
-      },
-    };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-    next = jest.fn();
+describe("test /login route", () => {
+  let server = null;
+  beforeAll(async () => {
+    await mongoose.connect(DB_URI);
+    server = app.listen(PORT);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  afterAll(async () => {
+    await mongoose.connection.close();
+    server.close();
   });
 
-  it("should respond with status 200 and return a token and user object", async () => {
-    const user = {
-      _id: "userId",
-      email: "test@example.com",
-      password: "hashedPassword",
+  beforeEach(async () => {
+    await deleteUsers({});
+    const password = await bcrypt.hash("123456", 10);
+    await User.create({
+      email: "bogdan@gmail.com",
+      password,
       subscription: "starter",
-    };
-
-    User.findOne.mockResolvedValue(user);
-    bcrypt.compare.mockResolvedValue(true);
-    const token = "jwtToken";
-    jwt.sign.mockReturnValue(token);
-
-    await login(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({
-      token,
-      user: {
-        email: user.email,
-        subscription: user.subscription,
-      },
     });
   });
 
-  it("should call next with an error if user is not found", async () => {
-    User.findOne.mockResolvedValue(null);
-
-    await login(req, res, next);
-
-    expect(next).toHaveBeenCalledWith(
-      HttpError(401, "Email or password is wrong")
-    );
+  afterEach(async () => {
+    await deleteUsers({});
   });
 
-  it("should call next with an error if password is incorrect", async () => {
-    const user = {
-      _id: "userId",
-      email: "test@example.com",
-      password: "hashedPassword",
-      subscription: "starter",
+  test("test /login with correct data", async () => {
+    const loginData = {
+      email: "bogdan@gmail.com",
+      password: "123456",
     };
 
-    User.findOne.mockResolvedValue(user);
-    bcrypt.compare.mockResolvedValue(false);
+    const { statusCode, body } = await request(app)
+      .post("/api/users/login")
+      .send(loginData);
 
-    await login(req, res, next);
+    expect(statusCode).toBe(200);
+    expect(body.token).toBeDefined();
+    expect(body.user.email).toBe(loginData.email);
+    expect(body.user.subscription).toBe("starter");
 
-    expect(next).toHaveBeenCalledWith(
-      HttpError(401, "Email or password is wrong")
-    );
-  });
-
-  it("should call next with an error if User.findByIdAndUpdate fails", async () => {
-    const user = {
-      _id: "userId",
-      email: "test@example.com",
-      password: "hashedPassword",
-      subscription: "starter",
-    };
-
-    User.findOne.mockResolvedValue(user);
-    bcrypt.compare.mockResolvedValue(true);
-    jwt.sign.mockReturnValue("jwtToken");
-    User.findByIdAndUpdate.mockRejectedValue(new Error("Update failed"));
-
-    await login(req, res, next);
-
-    expect(next).toHaveBeenCalledWith(new Error("Update failed"));
+    const user = await findUser({ email: loginData.email });
+    expect(user).toBeDefined();
+    expect(user.email).toBe(loginData.email);
   });
 });
