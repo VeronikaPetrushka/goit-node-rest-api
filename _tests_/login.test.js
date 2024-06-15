@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 const findUser = (filter) => User.findOne(filter);
 const deleteUsers = (filter) => User.deleteMany(filter);
 
-const { DB_URI, PORT = 8080 } = process.env;
+const { DB_URI, PORT = 3000 } = process.env;
 
 describe("test /login route", () => {
   let server = null;

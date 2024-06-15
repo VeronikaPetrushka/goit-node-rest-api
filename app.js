@@ -45,3 +45,5 @@ try {
 } catch (err) {
   console.error(`Server not running. Error message: ${err.message}`);
 }
+
+export default app;
