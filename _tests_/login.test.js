@@ -4,9 +4,7 @@ import request from "supertest";
 import app from "../app.js";
 import User from "../schemas/user.js";
 import bcrypt from "bcrypt";
-
-const findUser = (filter) => User.findOne(filter);
-const deleteUsers = (filter) => User.deleteMany(filter);
+import { findUser, deleteUsers } from "../services/auth.js";
 
 const { DB_URI, PORT = 3000 } = process.env;
 
