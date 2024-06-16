@@ -37,6 +37,10 @@ export const updateUserSubscription = async (req, res, next) => {
 
 export const updateUserAvatar = async (req, res, next) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Avatar file is required" });
+    }
+
     const { _id } = req.user;
     const tempPath = req.file.path;
     const filename = req.file.filename;
