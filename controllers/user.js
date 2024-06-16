@@ -3,6 +3,7 @@ import User from "../schemas/user.js";
 import HttpError from "../middlewares/HttpError.js";
 import Jimp from "jimp";
 import fs from "fs/promises";
+import path from "path";
 
 export const updateUserSubscription = async (req, res, next) => {
   const { _id, email } = req.user;
@@ -41,7 +42,7 @@ export const updateUserAvatar = async (req, res, next) => {
       return res.status(400).json({ message: "Avatar file is required" });
     }
 
-    const { _id } = req.user;
+    const { _id, avatarURL } = req.user;
     const tempPath = req.file.path;
     const filename = req.file.filename;
     const avatarDir = path.resolve("public", "avatars");
