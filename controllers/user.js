@@ -42,7 +42,7 @@ export const updateUserAvatar = async (req, res, next) => {
       return res.status(400).json({ message: "Avatar file is required" });
     }
 
-    const { _id, avatarURL } = req.user;
+    const { _id } = req.user;
     const tempPath = req.file.path;
     const filename = req.file.filename;
     const avatarDir = path.resolve("public", "avatars");
@@ -53,11 +53,12 @@ export const updateUserAvatar = async (req, res, next) => {
     const image = await Jimp.read(tempPath);
     await image.resize(250, 250).writeAsync(newPath);
 
-    await fs.rename(tempPath, newPath);
+    await fs.unlink(tempPath);
 
+    const avatarURL = `/avatars/${filename}`;
     const user = await User.findByIdAndUpdate(
       _id,
-      { avatarURL: filename },
+      { avatarURL },
       { new: true }
     );
 
