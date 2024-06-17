@@ -53,10 +53,9 @@ export const register = async (req, res, next) => {
   }
 };
 
-export const verifyEmail = async (req, res) => {
+export const verifyEmail = async (req, res, next) => {
   try {
     const { verificationToken } = req.params;
-    console.log(verificationToken);
     const user = await findUser({ verificationToken });
     if (!user) {
       throw HttpError(404, "User not found");
@@ -90,7 +89,7 @@ export const resendVerify = async (req, res) => {
     html: `<a href="http:/localhost:8080//api/users/verify/:${user.verificationToken}" target="_blank">Click to verify</a>`,
   };
 
-  await sendEmail(verifyEmail);
+  await mail.sendMail(verifyEmail);
 
   res.status(200).json({
     message: "Verification email sent",
