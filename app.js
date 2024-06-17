@@ -1,15 +1,28 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import path from "path";
+import "dotenv/config";
 
-import contactsRouter from "./routes/contactsRouter.js";
+import contactsRouter from "./routes/contacts.js";
+import authRouter from "./routes/auth.js";
+import userRouter from "./routes/user.js";
+import handleMongooseError from "./middlewares/mongooseErr.js";
+
+import "./db.js";
 
 const app = express();
 
-app.use(morgan("tiny"));
-app.use(cors());
 app.use(express.json());
+app.use(cors());
+app.use(morgan("tiny"));
 
+// app.use(express.static("public"));
+
+app.use("/avatars", express.static(path.resolve("public/avatars")));
+
+app.use("/api/users", authRouter);
+app.use("/api/users", userRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((_, res) => {
@@ -21,6 +34,16 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message });
 });
 
-app.listen(3000, () => {
-  console.log("Server is running. Use our API on port: 3000");
-});
+app.use(handleMongooseError);
+
+const PORT = process.env.PORT || 8080;
+
+try {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+} catch (err) {
+  console.error(`Server not running. Error message: ${err.message}`);
+}
+
+export default app;
