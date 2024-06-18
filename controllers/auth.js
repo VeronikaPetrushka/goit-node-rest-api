@@ -86,7 +86,7 @@ export const resendVerify = async (req, res) => {
   const verifyEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a href="http:/localhost:8080//api/users/verify/:${user.verificationToken}" target="_blank">Click to verify</a>`,
+    html: `<a href="http://localhost:8080/api/users/verify/:${user.verificationToken}" target="_blank">Click to verify</a>`,
   };
 
   await mail.sendMail(verifyEmail);
@@ -105,7 +105,7 @@ export const login = async (req, res, next) => {
       throw HttpError(401, "Email or password is wrong");
     }
 
-    if (!user.varify) {
+    if (!user.verify) {
       throw HttpError(401, "Please verify your email");
     }
 
