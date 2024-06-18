@@ -73,27 +73,31 @@ export const verifyEmail = async (req, res, next) => {
   }
 };
 
-export const resendVerify = async (req, res) => {
-  const { email } = req.body;
-  const user = await findUser({ email });
-  if (!user) {
-    throw HttpError(404, "Missing required field email");
+export const resendVerify = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await findUser({ email });
+    if (!user) {
+      throw HttpError(404, "Missing required field email");
+    }
+    if (user.verify) {
+      throw HttpError(400, "Verification has already been passed");
+    }
+
+    const verifyEmail = {
+      to: email,
+      subject: "Verify email",
+      html: `<a href="http://localhost:8080/api/users/verify/:${user.verificationToken}" target="_blank">Click to verify</a>`,
+    };
+
+    await mail.sendMail(verifyEmail);
+
+    res.status(200).json({
+      message: "Verification email sent",
+    });
+  } catch (error) {
+    next(error);
   }
-  if (user.verify) {
-    throw HttpError(400, "Verification has already been passed");
-  }
-
-  const verifyEmail = {
-    to: email,
-    subject: "Verify email",
-    html: `<a href="http://localhost:8080/api/users/verify/:${user.verificationToken}" target="_blank">Click to verify</a>`,
-  };
-
-  await mail.sendMail(verifyEmail);
-
-  res.status(200).json({
-    message: "Verification email sent",
-  });
 };
 
 export const login = async (req, res, next) => {
